@@ -4,7 +4,7 @@ import pprint
 import google.generativeai as palm
 from llama_index.llms.palm import PaLM
 import nest_asyncio
-from llama_index import SimpleDirectoryReader, ServiceContext
+from llama_index import SimpleDirectoryReader, ServiceContext, VectorStoreIndex
 from llama_index.response.pprint_utils import pprint_response
 from llama_index.tools import QueryEngineTool, ToolMetadata
 from llama_index.query_engine import SubQuestionQueryEngine
