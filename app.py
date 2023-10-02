@@ -22,9 +22,9 @@ service_context = ServiceContext.from_defaults(llm=model)
 
 def load_pdf(company):
     if company == "Apple":
-        file_path = "https://d18rn0p25nwr6d.cloudfront.net/CIK-0000320193/b4266e40-1de6-4a34-9dfb-8632b8bd57e0.pdf"
+        file_path = "https://github.com/AI-ANK/aiequityanalyst/raw/main/apple.pdf"
     elif company == "Tesla":
-        file_path = "https://ir.tesla.com/_flysystem/s3/sec/000095017023001409/tsla-20221231-gen.pdf"
+        file_path = "https://github.com/AI-ANK/aiequityanalyst/raw/main/tesla.pdf"
     
     return SimpleDirectoryReader(input_files=[file_path]).load_data()
 
