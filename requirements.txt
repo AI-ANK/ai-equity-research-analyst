@@ -5,3 +5,4 @@ nest_asyncio
 IPython
 transformers
 torch
+pypdf
