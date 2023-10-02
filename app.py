@@ -10,6 +10,7 @@ from llama_index.tools import QueryEngineTool, ToolMetadata
 from llama_index.query_engine import SubQuestionQueryEngine
 import time
 from IPython.display import display, Markdown
+import requests
 
 nest_asyncio.apply()
 
@@ -20,13 +21,29 @@ palm.configure(api_key=palm_api_key)
 model = PaLM(api_key=palm_api_key)
 service_context = ServiceContext.from_defaults(llm=model)
 
+
+
 def load_pdf(company):
+    # Define the URLs for the PDFs
     if company == "Apple":
-        file_path = "https://github.com/AI-ANK/aiequityanalyst/raw/main/apple.pdf"
+        url = "https://github.com/AI-ANK/aiequityanalyst/raw/main/apple.pdf"
     elif company == "Tesla":
-        file_path = "https://github.com/AI-ANK/aiequityanalyst/raw/main/tesla.pdf"
+        url = "https://github.com/AI-ANK/aiequityanalyst/raw/main/tesla.pdf"
     
-    return SimpleDirectoryReader(input_files=[file_path]).load_data()
+    # Define a local file path to save the downloaded PDF
+    local_file_path = f"{company}_10k.pdf"
+    
+    # Download the PDF
+    response = requests.get(url)
+    with open(local_file_path, 'wb') as f:
+        f.write(response.content)
+    
+    # Ensure the file exists locally before attempting to read it
+    if not os.path.exists(local_file_path):
+        raise ValueError(f"Failed to save {company}'s 10k report.")
+    
+    # Return the data using SimpleDirectoryReader
+    return SimpleDirectoryReader(input_files=[local_file_path]).load_data()
 
 def generate_report(data):
     index = VectorStoreIndex.from_documents(data, service_context=service_context)
