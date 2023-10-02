@@ -1,0 +1,5 @@
+streamlit
+google-generativeai
+llama-index
+nest_asyncio
+IPython
