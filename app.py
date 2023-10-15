@@ -16,6 +16,18 @@ from typing import Optional, Dict, Any, List
 import nest_asyncio
 nest_asyncio.apply()
 
+@st.cache_resource
+def initialize_model(api_key):
+    return PaLM(api_key=api_key)
+
+@st.cache_data
+def load_data(file_path):
+    return SimpleDirectoryReader(input_files=[file_path]).load_data()
+
+@st.cache_data
+def get_index(storage_context, index_id, service_context):
+    return load_index_from_storage(storage_context, index_id=index_id, service_context=service_context)
+
 # Streamlit page configuration
 st.set_page_config(page_title="AI Generated Equity Research Report", layout="wide")
 
@@ -24,7 +36,7 @@ palm_api_key = st.secrets['palm_api_key']
 palm.configure(api_key=palm_api_key)
 
 # Initialize model
-model = PaLM(api_key=palm_api_key)
+model = initialize_model(palm_api_key)
 
 # Set up Callback Manager
 
@@ -109,11 +121,11 @@ company = st.selectbox("Choose a company", list(company_data.keys()))
 
 # Load pdf from HuggingFace or another source
 pdf_file_path = f"./tenk/10k_{company}.pdf"
-tenk_company = SimpleDirectoryReader(input_files=[pdf_file_path]).load_data()
+tenk_company = load_data(pdf_file_path)
 
 # Load vector indexes from folder
 storage_context = StorageContext.from_defaults(persist_dir="storage")
-index = load_index_from_storage(storage_context, index_id=f"index_{company}", service_context=service_context)
+index = get_index(storage_context, f"index_{company}", service_context)
 
 # Build query engine
 engine = index.as_query_engine(similarity_top_k=3)
@@ -130,9 +142,10 @@ query_engine_tools = [
 s_engine = SubQuestionQueryEngine.from_defaults(query_engine_tools=query_engine_tools, service_context=service_context, use_async=True)
 
 # Query Response
-with st.spinner("Fetching data..."):
-    response = s_engine.query("What is the company name")
 
-# Display Results
-st.markdown(f"# {company} Basic Equity Research Report")
-st.markdown(response.response)
+if company:
+    with st.spinner("Fetching data..."):
+        response = s_engine.query("What is the company name")
+        # Display Results
+        st.markdown(f"# {company} Basic Equity Research Report")
+        st.markdown(response.response)
