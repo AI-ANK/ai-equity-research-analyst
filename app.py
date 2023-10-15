@@ -158,18 +158,12 @@ if st.button("Generate Report"):
             - A narrative analysis of the company's financial statements, focusing on the trends, anomalies, or notable items.
             
             ### 3.1 Income Statement Analysis
-            - **Revenue Trends**: Describe the trends in revenue growth over the past few years. Identify any significant changes and discuss potential reasons.
             - **Profitability Trends**: Discuss the trends in net income and operating income. Identify any irregularities or notable events.
-            - **Expense Analysis**: Comment on the trend in major expense categories and identify any unusual fluctuations.
             
             ### 3.2 Balance Sheet Analysis
-            - **Asset Composition**: Describe the composition of assets and any significant changes over the recent period.
-            - **Liabilities and Equity Trends**: Discuss the trends in liabilities and equity, identifying any notable increases or decreases.
             - **Liquidity and Solvency**: Comment on the company's short-term and long-term financial health, referencing relevant items from the balance sheet.
             
             ### 3.3 Cash Flow Statement Analysis
-            - **Operating Cash Flow Trends**: Describe the trends in operating cash flows and identify any significant changes.
-            - **Investing and Financing Activities**: Discuss notable investing or financing activities and their impact on the company's cash position.
             - **Free Cash Flow Trends**: Comment on the trend in free cash flow and discuss any factors affecting it.
             
             DO NOT INCLUDE ANY CONCLUSION HERE
@@ -189,11 +183,7 @@ if st.button("Generate Report"):
             - **Investor Sentiment**: Discuss any commentary on investor sentiment or market perception provided in the 10-K.
             - **Historical Stock Performance**: Reflect on the historical stock performance and any factors mentioned in the 10-K that might have influenced it.
             
-            ### 4.2 Industry Comparison
-            - **Industry Positioning**: Discuss the company's positioning within its industry as mentioned in the 10-K, including market share, competitive strengths, and reputation.
-            - **Peer Performance**: If available in the 10-K, discuss how the company’s financial performance compares to its peers within the industry.
-            
-            ### 4.3 Forward-Looking Statements
+            ### 4.2 Forward-Looking Statements
             - **Outlook and Projections**: Summarize any forward-looking statements or financial outlook provided in the 10-K.
             - **Strategic Initiatives**: Highlight any strategic initiatives or plans discussed in the 10-K that are expected to impact future valuation.
             
@@ -207,7 +197,6 @@ if st.button("Generate Report"):
             
             
             ## 7. Conclusion & Recommendations
-            - Summarizing the main findings of the report and providing clear recommendations for potential investors.
             - A clear statement of the analyst's view on the stock (buy, hold, sell) and the rationale behind that view.
             """
             )
