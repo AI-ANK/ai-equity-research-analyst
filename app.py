@@ -24,10 +24,6 @@ def initialize_model(api_key):
 def load_data(file_path):
     return SimpleDirectoryReader(input_files=[file_path]).load_data()
 
-@st.cache_data
-def get_index(storage_context, index_id, service_context):
-    return load_index_from_storage(storage_context, index_id=index_id, service_context=service_context)
-
 # Streamlit page configuration
 st.set_page_config(page_title="AI Generated Equity Research Report", layout="wide")
 
@@ -125,7 +121,7 @@ tenk_company = load_data(pdf_file_path)
 
 # Load vector indexes from folder
 storage_context = StorageContext.from_defaults(persist_dir="storage")
-index = get_index(storage_context, f"index_{company}", service_context)
+index = load_index_from_storage(storage_context, index_id=index_id, service_context=service_context)
 
 # Build query engine
 engine = index.as_query_engine(similarity_top_k=3)
