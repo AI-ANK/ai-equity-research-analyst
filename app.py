@@ -121,7 +121,7 @@ tenk_company = load_data(pdf_file_path)
 
 # Load vector indexes from folder
 storage_context = StorageContext.from_defaults(persist_dir="storage")
-index = load_index_from_storage(storage_context, index_id=index_id, service_context=service_context)
+index = load_index_from_storage(storage_context, index_id=f"index_{company}", service_context=service_context)
 
 # Build query engine
 engine = index.as_query_engine(similarity_top_k=3)
