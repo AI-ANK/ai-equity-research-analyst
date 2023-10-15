@@ -206,4 +206,4 @@ if st.button("Generate Report"):
             # Display Results
             st.markdown(f"# {company} Basic Equity Research Report")
             st.markdown(response.response)
-            st.markdown(response.response2)
+            st.markdown(response2.response)
