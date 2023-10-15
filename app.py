@@ -140,7 +140,7 @@ s_engine = SubQuestionQueryEngine.from_defaults(query_engine_tools=query_engine_
 # Query Response
 
 if company:
-    with st.spinner("Fetching data..."):
+    with st.status("Query the LLM and fetching data...", expanded = True) as status:
         response = s_engine.query(
         """
         Perform a comprehensive analysis of the 10-k and generate the first half of an equity analysis report while strictly following this format in markdown:
@@ -211,6 +211,7 @@ if company:
         - A clear statement of the analyst's view on the stock (buy, hold, sell) and the rationale behind that view.
         """
         )
+        status.update(state="complete", expanded=False)
 
         # Display Results
         st.markdown(f"# {company} Basic Equity Research Report")
