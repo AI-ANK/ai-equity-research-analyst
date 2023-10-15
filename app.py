@@ -51,15 +51,13 @@ class SubQuestionHandler(BaseCallbackHandler):
         return event_id  # Return the event ID (unchanged)
     
     def on_event_end(self, event_type: CBEventType, payload: Optional[Dict[str, Any]] = None, event_id: str = "", **kwargs: Any) -> None:
-        st.write(f"Event Type: {event_type}")  # Debugging line        
         if event_type == CBEventType.SUB_QUESTION:
             sub_question_data = payload.get(EventPayload.SUB_QUESTION.value)
             if sub_question_data:
                 sub_question = sub_question_data.sub_q.sub_question
                 answer = sub_question_data.answer
                 # Print the sub-question and its answer
-                st.write(f"Sub-Question: {sub_question}")
-                sleep(2)
+                st.write(f"Sub-Question: {sub_question} \n")
                 st.write(f"Answer: {answer}\n")
         return event_id  # Return the event ID (unchanged)
 
