@@ -1,122 +1,135 @@
 import streamlit as st
 import os
-import pprint
 import google.generativeai as palm
 from llama_index.llms.palm import PaLM
-import nest_asyncio
-from llama_index import SimpleDirectoryReader, ServiceContext, VectorStoreIndex
-from llama_index.response.pprint_utils import pprint_response
+from llama_index import SimpleDirectoryReader, ServiceContext, VectorStoreIndex, StorageContext
 from llama_index.tools import QueryEngineTool, ToolMetadata
 from llama_index.query_engine import SubQuestionQueryEngine
-import time
-from IPython.display import display, Markdown
-import requests
+from llama_index.callbacks.base_handler import BaseCallbackHandler
+from llama_index.callbacks.schema import CBEventType, EventPayload
+from llama_index.callbacks import CallbackManager
+from time import sleep
+from langchain.embeddings.huggingface import HuggingFaceBgeEmbeddings
+from llama_index import load_index_from_storage
+from typing import Optional, Dict, Any, List
 
-nest_asyncio.apply()
+# Streamlit page configuration
+st.set_page_config(page_title="AI Generated Equity Research Report", layout="wide")
 
-# This assumes you've set up your secrets accordingly
-palm_api_key = st.secrets["palm_api_key"]
-
+# Import secret (You'll need to replace this with your own method of importing secrets)
+palm_api_key = st.secrets['palm_api_key']
 palm.configure(api_key=palm_api_key)
+
+# Initialize model
 model = PaLM(api_key=palm_api_key)
-service_context = ServiceContext.from_defaults(llm=model)
+
+# Set up Callback Manager
+
+# Revised Callback Handler
+class SubQuestionHandler(BaseCallbackHandler):
+    def __init__(self, event_starts_to_ignore=[], event_ends_to_ignore=[]):
+        super().__init__(event_starts_to_ignore, event_ends_to_ignore)
+        
+    def on_event_start(self, event_type: CBEventType, payload: Optional[Dict[str, Any]] = None, event_id: str = "", parent_id: str = "", **kwargs: Any) -> str:
+        if event_type == CBEventType.SUB_QUESTION:
+            sub_question_data = payload.get(EventPayload.SUB_QUESTION.value)
+            if sub_question_data:
+                sub_question = sub_question_data.sub_q.sub_question
+                answer = sub_question_data.answer
+               
+        return event_id  # Return the event ID (unchanged)
+    
+    def on_event_end(self, event_type: CBEventType, payload: Optional[Dict[str, Any]] = None, event_id: str = "", **kwargs: Any) -> None:
+        if event_type == CBEventType.SUB_QUESTION:
+            sub_question_data = payload.get(EventPayload.SUB_QUESTION.value)
+            if sub_question_data:
+                sub_question = sub_question_data.sub_q.sub_question
+                answer = sub_question_data.answer
+                # Print the sub-question and its answer
+                print(f"Sub-Question: {sub_question}")
+                sleep(2)
+                print(f"Answer: {answer}\n")
+        return event_id  # Return the event ID (unchanged)
+
+    def start_trace(self, trace_id: Optional[str] = None) -> None:
+        pass
+
+    def end_trace(self, trace_id: Optional[str] = None, trace_map: Optional[Dict[str, List[str]]] = None) -> None:
+        pass
 
 
+callback_manager = CallbackManager(handlers=[SubQuestionHandler()])
 
-def load_pdf(company):
-    # Define the URLs for the PDFs
-    if company == "Apple":
-        url = "https://github.com/AI-ANK/aiequityanalyst/raw/main/apple.pdf"
-    elif company == "Tesla":
-        url = "https://github.com/AI-ANK/aiequityanalyst/raw/main/tesla.pdf"
-    
-    # Define a local file path to save the downloaded PDF
-    local_file_path = f"{company}_10k.pdf"
-    
-    # Download the PDF
-    response = requests.get(url)
-    with open(local_file_path, 'wb') as f:
-        f.write(response.content)
-    
-    # Ensure the file exists locally before attempting to read it
-    if not os.path.exists(local_file_path):
-        raise ValueError(f"Failed to save {company}'s 10k report.")
-    
-    # Return the data using SimpleDirectoryReader
-    return SimpleDirectoryReader(input_files=[local_file_path]).load_data()
+# Optionally set specific embed model
+embed_model = HuggingFaceBgeEmbeddings(model_name="BAAI/bge-small-en")
 
-def generate_report(data):
-    index = VectorStoreIndex.from_documents(data, service_context=service_context)
-    appleengine = index.as_query_engine(similarity_top_k=3)
-    query_engine_tools = [
-        QueryEngineTool(
-            query_engine=appleengine,
-            metadata=ToolMetadata(
-                name="engine",
-                description=f"Provides information about {company} annual 10-k financials",
-            ),
+# Set service context
+service_context = ServiceContext.from_defaults(llm=model, embed_model=embed_model, callback_manager = callback_manager)
+
+# Company Data
+company_data = {
+    'Apple': {
+        'url': "https://d18rn0p25nwr6d.cloudfront.net/CIK-0000320193/b4266e40-1de6-4a34-9dfb-8632b8bd57e0.pdf",
+        'financial_year': 'For the fiscal year ended September 24, 2022'
+    },
+    'Microsoft': {
+        'url': "https://microsoft.gcs-web.com/static-files/e2931fdb-9823-4130-b2a8-f6b8db0b15a9",
+        'financial_year': 'For the Fiscal Year Ended June 30, 2023'
+    },
+    'Amazon': {
+        'url': "https://d18rn0p25nwr6d.cloudfront.net/CIK-0001018724/d2fde7ee-05f7-419d-9ce8-186de4c96e25.pdf",
+        'financial_year': 'For the fiscal year ended December 31, 2022'
+    },
+    'Nvidia': {
+        'url': "https://d18rn0p25nwr6d.cloudfront.net/CIK-0001045810/4e9abe7b-fdc7-4cd2-8487-dc3a99f30e98.pdf",
+        'financial_year': 'For the fiscal year ended January 29, 2023'
+    },
+    'Alphabet': {
+        'url': "https://abc.xyz/assets/9a/bd/838c917c4b4ab21f94e84c3c2c65/goog-10-k-q4-2022.pdf",
+        'financial_year': 'For the fiscal year ended December 31, 2022'
+    },
+    'Meta': {
+        'url': "https://d18rn0p25nwr6d.cloudfront.net/CIK-0001326801/e574646c-c642-42d9-9229-3892b13aabfb.pdf",
+        'financial_year': 'For the fiscal year ended December 31, 2022'
+    },
+    'Tesla': {
+        'url': "https://ir.tesla.com/_flysystem/s3/sec/000095017023001409/tsla-20221231-gen.pdf",
+        'financial_year': 'For the fiscal year ended December 31, 2022'
+    },
+    # ... add more companies as needed
+}
+
+# Streamlit UI: Company Selector
+st.header("Select a Company")
+company = st.selectbox("Choose a company", list(company_data.keys()))
+
+
+# Load pdf from HuggingFace or another source
+pdf_file_path = f"./tenk/10k_{company}.pdf"
+tenk_company = SimpleDirectoryReader(input_files=[pdf_file_path]).load_data()
+
+# Load vector indexes from folder
+storage_context = StorageContext.from_defaults(persist_dir="storage")
+index = load_index_from_storage(storage_context, index_id=f"index_{company}", service_context=service_context)
+
+# Build query engine
+engine = index.as_query_engine(similarity_top_k=3)
+query_engine_tools = [
+    QueryEngineTool(
+        query_engine=engine,
+        metadata=ToolMetadata(
+            name="10k engine",
+            description=f"Provides information about {company} annual 10-k financials {company_data[company]['financial_year']}",
         ),
-    ]
-    s_engine = SubQuestionQueryEngine.from_defaults(query_engine_tools=query_engine_tools, service_context=service_context)
-    
-    # Queries for the report
-    query1 =  """
-Perform a comprehensive analysis of the 10-k and generate the first half of an equity analysis report following this format in markdown:
-    
-## 1. Executive Summary
-- A brief overview of the company, its industry, and the main conclusions of the report.
+    ),
+]
 
-## 2. Company Overview
-- Detailed background information about the company, including its history, products or services, and organizational structure.
+s_engine = SubQuestionQueryEngine.from_defaults(query_engine_tools=query_engine_tools, service_context=service_context, use_async=True)
 
-## 3. Industry Analysis
-- A review of the industry in which the company operates, including trends, competition, and growth prospects.
+# Query Response
+with st.spinner("Fetching data..."):
+    response = s_engine.query("What is the company name")
 
-## 4. Financial Analysis
-- An in-depth analysis of the company's financial statements, including ratio analysis, cash flows, and profitability.
-
-### 4.1 Income Statement Analysis
-- Examination of revenue, cost structures, and net income trends.
-
-### 4.2 Balance Sheet Analysis
-- A breakdown of assets, liabilities, and shareholder equity.
-
-### 4.3 Cash Flow Statement Analysis
-- Insights into the company's cash generation and expenditure patterns.
-    """
-    query2 = """
-Perform a comprehensive analysis of the 10-k and generate the second half of an equity analysis report following this format in markdown:
-
-
-## 5. Valuation
-- Assessment of the company's current valuation using various methodologies like DCF, comparables, and precedent transactions.
-
-## 6. SWOT Analysis
-- A breakdown of the company's Strengths, Weaknesses, Opportunities, and Threats.
-
-## 7. Investment Thesis
-- A clear statement of the analyst's view on the stock (buy, hold, sell) and the rationale behind that view.
-
-## 8. Risks & Challenges
-- An outline of potential risks and challenges that could affect the company's future performance.
-
-## 9. Conclusion & Recommendations
-- Summarizing the main findings of the report and providing clear recommendations for potential investors.
-"""
-    
-    response1 = s_engine.query(query1)
-    response2 = s_engine.query(query2)
-    
-    return response1.response, response2.response
-
-st.title("Equity Analysis Report Generator")
-
-# Dropdown for company selection
-company = st.selectbox("Select a company:", ["Apple", "Tesla"])
-
-# Load button to trigger analysis
-if st.button("Generate Report"):
-    data = load_pdf(company)
-    report1, report2 = generate_report(data)
-    st.markdown(report1)
-    st.markdown(report2)
+# Display Results
+st.markdown(f"# {company} Basic Equity Research Report")
+st.markdown(response.response)
