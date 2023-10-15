@@ -13,6 +13,9 @@ from langchain.embeddings.huggingface import HuggingFaceBgeEmbeddings
 from llama_index import load_index_from_storage
 from typing import Optional, Dict, Any, List
 
+import nest_asyncio
+nest_asyncio.apply()
+
 # Streamlit page configuration
 st.set_page_config(page_title="AI Generated Equity Research Report", layout="wide")
 
@@ -46,9 +49,9 @@ class SubQuestionHandler(BaseCallbackHandler):
                 sub_question = sub_question_data.sub_q.sub_question
                 answer = sub_question_data.answer
                 # Print the sub-question and its answer
-                print(f"Sub-Question: {sub_question}")
+                st.write(f"Sub-Question: {sub_question}")
                 sleep(2)
-                print(f"Answer: {answer}\n")
+                st.write(f"Answer: {answer}\n")
         return event_id  # Return the event ID (unchanged)
 
     def start_trace(self, trace_id: Optional[str] = None) -> None:
