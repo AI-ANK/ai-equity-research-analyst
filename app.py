@@ -51,6 +51,7 @@ class SubQuestionHandler(BaseCallbackHandler):
         return event_id  # Return the event ID (unchanged)
     
     def on_event_end(self, event_type: CBEventType, payload: Optional[Dict[str, Any]] = None, event_id: str = "", **kwargs: Any) -> None:
+        st.write(f"Event Type: {event_type}, Payload: {payload}")  # Debugging line        
         if event_type == CBEventType.SUB_QUESTION:
             sub_question_data = payload.get(EventPayload.SUB_QUESTION.value)
             if sub_question_data:
