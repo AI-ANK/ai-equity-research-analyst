@@ -114,106 +114,106 @@ company_data = {
 st.header("Select a Company")
 company = st.selectbox("Choose a company", list(company_data.keys()))
 
-
-# Load pdf from HuggingFace or another source
-pdf_file_path = f"./tenk/10k_{company}.pdf"
-tenk_company = load_data(pdf_file_path)
-
-# Load vector indexes from folder
-storage_context = StorageContext.from_defaults(persist_dir="storage")
-index = load_index_from_storage(storage_context, index_id=f"index_{company}", service_context=service_context)
-
-# Build query engine
-engine = index.as_query_engine(similarity_top_k=3)
-query_engine_tools = [
-    QueryEngineTool(
-        query_engine=engine,
-        metadata=ToolMetadata(
-            name="10k engine",
-            description=f"Provides information about {company} annual 10-k financials {company_data[company]['financial_year']}",
+if st.button("Generate Report"):
+    # Load pdf from HuggingFace or another source
+    pdf_file_path = f"./tenk/10k_{company}.pdf"
+    tenk_company = load_data(pdf_file_path)
+    
+    # Load vector indexes from folder
+    storage_context = StorageContext.from_defaults(persist_dir="storage")
+    index = load_index_from_storage(storage_context, index_id=f"index_{company}", service_context=service_context)
+    
+    # Build query engine
+    engine = index.as_query_engine(similarity_top_k=3)
+    query_engine_tools = [
+        QueryEngineTool(
+            query_engine=engine,
+            metadata=ToolMetadata(
+                name="10k engine",
+                description=f"Provides information about {company} annual 10-k financials {company_data[company]['financial_year']}",
+            ),
         ),
-    ),
-]
-
-s_engine = SubQuestionQueryEngine.from_defaults(query_engine_tools=query_engine_tools, service_context=service_context, use_async=True)
-
-# Query Response
-
-if company:
-    with st.status("Query the LLM and fetching data...", expanded = True) as status:
-        response = s_engine.query(
-        """
-        Perform a comprehensive analysis of the 10-k and generate the first half of an equity analysis report while strictly following this format in markdown:
-            
-        ## 1. Executive Summary
-        - A brief overview of the company, its industry, and the main conclusions of the report.
-        
-        ## 2. Industry Analysis
-        - A review of the industry in which the company operates, including trends, competition, and growth prospects.
-        
-        ## 3. Financial Analysis
-        - An in-depth analysis of the company's financial statements, including ratio analysis, cash flows, and profitability.
-        
-        ## 3. Financial Analysis
-        - A narrative analysis of the company's financial statements, focusing on the trends, anomalies, or notable items.
-        
-        ### 3.1 Income Statement Analysis
-        - **Revenue Trends**: Describe the trends in revenue growth over the past few years. Identify any significant changes and discuss potential reasons.
-        - **Profitability Trends**: Discuss the trends in net income and operating income. Identify any irregularities or notable events.
-        - **Expense Analysis**: Comment on the trend in major expense categories and identify any unusual fluctuations.
-        
-        ### 3.2 Balance Sheet Analysis
-        - **Asset Composition**: Describe the composition of assets and any significant changes over the recent period.
-        - **Liabilities and Equity Trends**: Discuss the trends in liabilities and equity, identifying any notable increases or decreases.
-        - **Liquidity and Solvency**: Comment on the company's short-term and long-term financial health, referencing relevant items from the balance sheet.
-        
-        ### 3.3 Cash Flow Statement Analysis
-        - **Operating Cash Flow Trends**: Describe the trends in operating cash flows and identify any significant changes.
-        - **Investing and Financing Activities**: Discuss notable investing or financing activities and their impact on the company's cash position.
-        - **Free Cash Flow Trends**: Comment on the trend in free cash flow and discuss any factors affecting it.
-        
-        DO NOT INCLUDE ANY CONCLUSION HERE
+    ]
+    
+    s_engine = SubQuestionQueryEngine.from_defaults(query_engine_tools=query_engine_tools, service_context=service_context, use_async=True)
+    
+    # Query Response
+    
+    if company:
+        with st.status("Query the LLM and fetching data...", expanded = True) as status:
+            response = s_engine.query(
             """
-        )
-        
-        response2 = s_engine.query(
-        
-        """
-        Perform a comprehensive analysis of the 10-k and generate the second half of an equity analysis report while strictly following this format in markdown:
-        
-        ## 4. Valuation
-        
-        - A qualitative assessment of the company’s valuation based on the information available in the 10-K report.
-        
-        ### 4.1 Market Perception
-        - **Investor Sentiment**: Discuss any commentary on investor sentiment or market perception provided in the 10-K.
-        - **Historical Stock Performance**: Reflect on the historical stock performance and any factors mentioned in the 10-K that might have influenced it.
-        
-        ### 4.2 Industry Comparison
-        - **Industry Positioning**: Discuss the company's positioning within its industry as mentioned in the 10-K, including market share, competitive strengths, and reputation.
-        - **Peer Performance**: If available in the 10-K, discuss how the company’s financial performance compares to its peers within the industry.
-        
-        ### 4.3 Forward-Looking Statements
-        - **Outlook and Projections**: Summarize any forward-looking statements or financial outlook provided in the 10-K.
-        - **Strategic Initiatives**: Highlight any strategic initiatives or plans discussed in the 10-K that are expected to impact future valuation.
-        
-        
-        ## 5. SWOT Analysis
-        - A breakdown of the company's Strengths, Weaknesses, Opportunities, and Threats.
-        
-        ## 6.  Risk Factors
-        - **Identified Risks**: Summarize the key risk factors identified in the 10-K that could affect the company’s valuation.
-        - **Mitigation Strategies**: Discuss any mitigation strategies mentioned to address these risks.
-        
-        
-        ## 7. Conclusion & Recommendations
-        - Summarizing the main findings of the report and providing clear recommendations for potential investors.
-        - A clear statement of the analyst's view on the stock (buy, hold, sell) and the rationale behind that view.
-        """
-        )
-        status.update(state="complete", expanded=False)
-
-        # Display Results
-        st.markdown(f"# {company} Basic Equity Research Report")
-        st.markdown(response.response)
-        st.markdown(response.response2)
+            Perform a comprehensive analysis of the 10-k and generate the first half of an equity analysis report while strictly following this format in markdown:
+                
+            ## 1. Executive Summary
+            - A brief overview of the company, its industry, and the main conclusions of the report.
+            
+            ## 2. Industry Analysis
+            - A review of the industry in which the company operates, including trends, competition, and growth prospects.
+            
+            ## 3. Financial Analysis
+            - An in-depth analysis of the company's financial statements, including ratio analysis, cash flows, and profitability.
+            
+            ## 3. Financial Analysis
+            - A narrative analysis of the company's financial statements, focusing on the trends, anomalies, or notable items.
+            
+            ### 3.1 Income Statement Analysis
+            - **Revenue Trends**: Describe the trends in revenue growth over the past few years. Identify any significant changes and discuss potential reasons.
+            - **Profitability Trends**: Discuss the trends in net income and operating income. Identify any irregularities or notable events.
+            - **Expense Analysis**: Comment on the trend in major expense categories and identify any unusual fluctuations.
+            
+            ### 3.2 Balance Sheet Analysis
+            - **Asset Composition**: Describe the composition of assets and any significant changes over the recent period.
+            - **Liabilities and Equity Trends**: Discuss the trends in liabilities and equity, identifying any notable increases or decreases.
+            - **Liquidity and Solvency**: Comment on the company's short-term and long-term financial health, referencing relevant items from the balance sheet.
+            
+            ### 3.3 Cash Flow Statement Analysis
+            - **Operating Cash Flow Trends**: Describe the trends in operating cash flows and identify any significant changes.
+            - **Investing and Financing Activities**: Discuss notable investing or financing activities and their impact on the company's cash position.
+            - **Free Cash Flow Trends**: Comment on the trend in free cash flow and discuss any factors affecting it.
+            
+            DO NOT INCLUDE ANY CONCLUSION HERE
+                """
+            )
+            
+            response2 = s_engine.query(
+            
+            """
+            Perform a comprehensive analysis of the 10-k and generate the second half of an equity analysis report while strictly following this format in markdown:
+            
+            ## 4. Valuation
+            
+            - A qualitative assessment of the company’s valuation based on the information available in the 10-K report.
+            
+            ### 4.1 Market Perception
+            - **Investor Sentiment**: Discuss any commentary on investor sentiment or market perception provided in the 10-K.
+            - **Historical Stock Performance**: Reflect on the historical stock performance and any factors mentioned in the 10-K that might have influenced it.
+            
+            ### 4.2 Industry Comparison
+            - **Industry Positioning**: Discuss the company's positioning within its industry as mentioned in the 10-K, including market share, competitive strengths, and reputation.
+            - **Peer Performance**: If available in the 10-K, discuss how the company’s financial performance compares to its peers within the industry.
+            
+            ### 4.3 Forward-Looking Statements
+            - **Outlook and Projections**: Summarize any forward-looking statements or financial outlook provided in the 10-K.
+            - **Strategic Initiatives**: Highlight any strategic initiatives or plans discussed in the 10-K that are expected to impact future valuation.
+            
+            
+            ## 5. SWOT Analysis
+            - A breakdown of the company's Strengths, Weaknesses, Opportunities, and Threats.
+            
+            ## 6.  Risk Factors
+            - **Identified Risks**: Summarize the key risk factors identified in the 10-K that could affect the company’s valuation.
+            - **Mitigation Strategies**: Discuss any mitigation strategies mentioned to address these risks.
+            
+            
+            ## 7. Conclusion & Recommendations
+            - Summarizing the main findings of the report and providing clear recommendations for potential investors.
+            - A clear statement of the analyst's view on the stock (buy, hold, sell) and the rationale behind that view.
+            """
+            )
+            status.update(state="complete", expanded=False)
+    
+            # Display Results
+            st.markdown(f"# {company} Basic Equity Research Report")
+            st.markdown(response.response)
+            st.markdown(response.response2)
