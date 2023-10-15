@@ -3,6 +3,6 @@ google-generativeai
 llama-index
 nest_asyncio
 IPython
-transformers
+sentence_transformers
 torch
 pypdf
