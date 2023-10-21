@@ -59,6 +59,7 @@ class SubQuestionHandler(BaseCallbackHandler):
                 # Print the sub-question and its answer
                 st.write(f"Sub-Question: {sub_question} \n")
                 st.write(f"Answer: {answer}\n")
+                st.markdown("---") 
         return event_id  # Return the event ID (unchanged)
 
     def start_trace(self, trace_id: Optional[str] = None) -> None:
