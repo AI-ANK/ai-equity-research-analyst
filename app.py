@@ -220,6 +220,6 @@ if st.button("Generate Report"):
             status.update(state="complete", expanded=False)
     
         # Display Results
-        st.markdown(f"# {company} Basic Equity Research Report")
+        st.markdown(f"# {company} Equity Research Report (Simplified Version)")
         st.markdown(response.response)
         st.markdown(response2.response)
