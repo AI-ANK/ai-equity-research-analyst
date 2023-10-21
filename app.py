@@ -204,5 +204,18 @@ if st.button("Generate Report"):
     
             # Display Results
         st.markdown(f"# {company} Basic Equity Research Report")
+        # Convert markdown to HTML
+        html_content = markdown.markdown(f"# {company} Basic Equity Research Report\n" + response.response + "\n" + response2.response)
+        
+        # Add additional lines to HTML content
+        html_content = "Generated using a proof of concept app developed by Harshad Suryawanshi\n\n" + \
+                       "Disclaimer: This is a generated report and not financial advice.\n\n" + \
+                       html_content
+        
+        # Convert HTML to PDF
+        pdfkit.from_string(html_content, 'report.pdf')
+        
+        # Provide download link for the PDF
+        st.markdown(f"[Download Report](sandbox:/path/to/report.pdf)", unsafe_allow_html=True)
         st.markdown(response.response)
         st.markdown(response2.response)
