@@ -107,7 +107,7 @@ company_data = {
         'url': "https://ir.tesla.com/_flysystem/s3/sec/000095017023001409/tsla-20221231-gen.pdf",
         'financial_year': 'For the fiscal year ended December 31, 2022'
     },
-    # ... add more companies as needed
+    # ...
 }
 
 # Sidebar
@@ -133,7 +133,7 @@ company = st.selectbox(" ", list(company_data.keys()))
 
 if st.button("Generate Report"):
     with st.spinner("Processing..."):    
-        # Load pdf from HuggingFace or another source
+        # Load pdf 
         pdf_file_path = f"./tenk/10k_{company}.pdf"
         tenk_company = load_data(pdf_file_path)
         
