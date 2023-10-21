@@ -137,7 +137,6 @@ if st.button("Generate Report"):
     s_engine = SubQuestionQueryEngine.from_defaults(query_engine_tools=query_engine_tools, service_context=service_context, use_async=True)
     
     # Query Response
-    
     if company:
         with st.status("Querying the LLM and fetching data...", expanded = True) as status:
             response = s_engine.query(
