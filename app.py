@@ -128,7 +128,7 @@ This application is a conceptual prototype created to demonstrate the potential 
 """)
 
 # Streamlit UI: Company Selector
-st.title("Select a Company")
+st.title("Select a Company to Generate Equity Research Report")
 company = st.selectbox(" ", list(company_data.keys()))
 
 if st.button("Generate Report"):
