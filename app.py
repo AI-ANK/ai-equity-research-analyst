@@ -114,6 +114,7 @@ st.header("Select a Company")
 company = st.selectbox("Choose a company", list(company_data.keys()))
 
 if st.button("Generate Report"):
+    with st.spinner("Processing..."):    
     # Load pdf from HuggingFace or another source
     pdf_file_path = f"./tenk/10k_{company}.pdf"
     tenk_company = load_data(pdf_file_path)
@@ -137,7 +138,6 @@ if st.button("Generate Report"):
     s_engine = SubQuestionQueryEngine.from_defaults(query_engine_tools=query_engine_tools, service_context=service_context, use_async=True)
     
     # Query Response
-with st.spinner("Processing..."):    
     if company:
         with st.status("Querying the LLM and fetching data...", expanded = True) as status:
             response = s_engine.query(
