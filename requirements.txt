@@ -6,3 +6,6 @@ IPython
 sentence_transformers
 torch
 pypdf
+markdown
+pdfkit
+weasyprint
