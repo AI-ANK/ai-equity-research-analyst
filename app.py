@@ -139,7 +139,7 @@ if st.button("Generate Report"):
     # Query Response
     
     if company:
-        with st.status("Query the LLM and fetching data...", expanded = True) as status:
+        with st.status("Querying the LLM and fetching data...", expanded = True) as status:
             response = s_engine.query(
             """
             Perform a comprehensive analysis of the 10-k and generate the first half of an equity analysis report while strictly following this format in markdown:
