@@ -114,27 +114,28 @@ st.header("Select a Company")
 company = st.selectbox("Choose a company", list(company_data.keys()))
 
 if st.button("Generate Report"):
-    # Load pdf from HuggingFace or another source
-    pdf_file_path = f"./tenk/10k_{company}.pdf"
-    tenk_company = load_data(pdf_file_path)
-    
-    # Load vector indexes from folder
-    storage_context = StorageContext.from_defaults(persist_dir="storage")
-    index = load_index_from_storage(storage_context, index_id=f"index_{company}", service_context=service_context)
-    
-    # Build query engine
-    engine = index.as_query_engine(similarity_top_k=3)
-    query_engine_tools = [
-        QueryEngineTool(
-            query_engine=engine,
-            metadata=ToolMetadata(
-                name="10k engine",
-                description=f"Provides information about {company} annual 10-k financials {company_data[company]['financial_year']}",
+    with st.spinner("Processing..."):    
+        # Load pdf from HuggingFace or another source
+        pdf_file_path = f"./tenk/10k_{company}.pdf"
+        tenk_company = load_data(pdf_file_path)
+        
+        # Load vector indexes from folder
+        storage_context = StorageContext.from_defaults(persist_dir="storage")
+        index = load_index_from_storage(storage_context, index_id=f"index_{company}", service_context=service_context)
+        
+        # Build query engine
+        engine = index.as_query_engine(similarity_top_k=3)
+        query_engine_tools = [
+            QueryEngineTool(
+                query_engine=engine,
+                metadata=ToolMetadata(
+                    name="10k engine",
+                    description=f"Provides information about {company} annual 10-k financials {company_data[company]['financial_year']}",
+                ),
             ),
-        ),
-    ]
-    
-    s_engine = SubQuestionQueryEngine.from_defaults(query_engine_tools=query_engine_tools, service_context=service_context, use_async=True)
+        ]
+        
+        s_engine = SubQuestionQueryEngine.from_defaults(query_engine_tools=query_engine_tools, service_context=service_context, use_async=True)
     
     # Query Response
     if company:
