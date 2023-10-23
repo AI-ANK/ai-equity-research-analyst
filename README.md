@@ -16,7 +16,7 @@ This Streamlit app demonstrates the use of LLMs, specifically using the Google P
 * API-driven financial data access.
 * Dedicated Python REPL for accurate calculations.
 
-[Try the demo here!](https://lnkd.in/dYwEXFYy)
+[Try the demo here!](https://ai-eqty-rsrch-anlyst.streamlit.app/)
 
 ## Tools and Technologies Used:
 - **LLM**: Google PaLM API
