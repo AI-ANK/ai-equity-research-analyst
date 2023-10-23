@@ -29,7 +29,7 @@ This Streamlit app demonstrates the use of LLMs, specifically using the Google P
 ## Project Structure:
 - `app.py`: The main application script for the Streamlit app.
 - `requirements.txt`: Lists the Python packages required for this project.
-- `storage/`: Directory containing resources or data for the project.
+- `storage/`: Directory contains vector store index files which are pre-generated for the 10k files to improve demo app performance
 - `tenk/`: Directory holding data or resources, likely related to 10-K filings.
 
 ## Setup and Usage:
