@@ -49,14 +49,6 @@ This Streamlit app demonstrates the use of LLMs, specifically using the Google P
     streamlit run app.py
     ```
 
-## Feedback and Contributions:
-Feel free to raise issues or submit pull requests if you think something can be improved or added. Your feedback is highly appreciated!
-
----
-
-Developed by Harshad Suryawanshi. If you find this project useful, consider giving it a ⭐ on GitHub!
----
-
 ### Building Vector Index from Scratch
 
 If you wish to build the vector index from scratch instead of using the pre-generated vector index, you can follow the steps below:
@@ -73,3 +65,12 @@ index.storage_context.persist(persist_dir="storage")
 ```
 
 Note: Building the vector index from scratch might take a considerable amount of time depending on the size of your data.
+
+
+## Feedback and Contributions:
+Feel free to raise issues or submit pull requests if you think something can be improved or added. Your feedback is highly appreciated!
+
+---
+
+Developed by Harshad Suryawanshi. If you find this project useful, consider giving it a ⭐ on GitHub!
+---
