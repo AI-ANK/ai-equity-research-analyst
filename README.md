@@ -55,25 +55,7 @@ Feel free to raise issues or submit pull requests if you think something can be 
 ---
 
 Developed by Harshad Suryawanshi. If you find this project useful, consider giving it a ⭐ on GitHub!
-
-## Building Fresh Vector Indexes
-
-If you do not want to use the pre-generated vector index and prefer to build your own fresh vector indexes, 
-you can follow these steps:
-
-1. Make sure you have loaded the required files in the `load_data` function.
-2. Uncomment the section in `app.py` related to building the vector index.
-3. Run the code.
-
-The section in `app.py` looks like the following:
-```python
-# storage_context = StorageContext.from_defaults()
-# index = VectorStoreIndex.from_documents(tenk_company, service_context=service_context, use_async=True, storage_context = storage_context)
-# index.set_index_id("index_"+company)
-# index.storage_context.persist(persist_dir="storage")
-```
-
-Uncommenting and running this section will generate and persist the vector index.
+---
 
 ### Building Vector Index from Scratch
 
