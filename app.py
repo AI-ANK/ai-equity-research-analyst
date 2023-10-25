@@ -136,6 +136,12 @@ if st.button("Generate Report"):
         # Load pdf 
         pdf_file_path = f"./tenk/10k_{company}.pdf"
         tenk_company = load_data(pdf_file_path)
+
+        # If you want to build a fresh vector index, uncomment the following lines:
+        # storage_context = StorageContext.from_defaults()
+        # index = VectorStoreIndex.from_documents(tenk_company, service_context=service_context, use_async=True, storage_context = storage_context)
+        # index.set_index_id("index_"+company)
+        # index.storage_context.persist(persist_dir="storage")
         
         # Load vector indexes from folder
         storage_context = StorageContext.from_defaults(persist_dir="storage")
